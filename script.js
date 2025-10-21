@@ -64,9 +64,9 @@ clearBtn?.addEventListener('click',()=>{
 });
 
 
-function pushUser(text){ const msg = { sender:'user', text, time: nowTime(), read:false }; messages.push(msg); saveMessages(messages); renderMsg(msg); }
+function pushUser(text){ const msg = { sender:'user', text, time: nowTime(), read:false }; messages.push(msg); saveMessages(messages); renderMsg(msg); scrollBottom(); }
 
-function pushBot(text){ const msg = { sender:'bot', text, time: nowTime() }; messages.push(msg); saveMessages(messages); renderMsg(msg); }
+function pushBot(text){ const msg = { sender:'bot', text, time: nowTime() }; messages.push(msg); saveMessages(messages); renderMsg(msg); scrollBottom(); }
 
 function markLastUserRead(){
   for(let i=messages.length-1;i>=0;i--){
@@ -86,24 +86,40 @@ function renderMsg(msg){
   const bubble = document.createElement('div'); bubble.className = 'bubble ' + (msg.sender==='user' ? 'bubble--user' : 'bubble--bot');
   bubble.innerText = msg.text;
   const meta = document.createElement('div'); meta.className = 'bubble__meta'; meta.innerText = msg.time;
-  bubble.appendChild(meta);
+  // If this is a user message, append the read-status inside the meta so it appears to the right of the time
   if(msg.sender==='user'){
     const read = document.createElement('span'); read.className='read-status' + (msg.read ? ' read' : '');
+    // single check icon (placed to the right of the time)
     read.innerHTML = `
       <svg viewBox="0 0 24 18" aria-hidden="true">
         <polyline class="tick" points="3 10 8 14 20 2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      <svg viewBox="0 0 24 18" aria-hidden="true">
-        <polyline class="tick" points="3 10 8 14 20 2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
     `;
-    bubble.appendChild(read);
+    meta.appendChild(read);
   }
+  bubble.appendChild(meta);
   row.appendChild(bubble); chatEl.appendChild(row); scrollBottom();
 }
 
-function scrollBottom(){ requestAnimationFrame(()=>{ chatEl.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' }); }); }
+function scrollBottom(){
+  // Robust immediate scroll: set scrollTop directly (fast), then ensure with RAF
+  // and a short timeout as a fallback for Chrome/layout races.
+  try{
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }catch(e){}
+  requestAnimationFrame(()=>{
+    try{ chatEl.scrollTo({ top: chatEl.scrollHeight, behavior: 'auto' }); }catch(e){}
+  });
+  // extra fallback in case layout changes after paint (mobile keyboards / Chrome races)
+  setTimeout(()=>{ try{ chatEl.scrollTop = chatEl.scrollHeight; }catch(e){} }, 60);
+}
 
 function computeReply(userText){ const norm = normalizeKey(userText); return normalized_messages_db[norm] || random(defaultReplies); }
 
 function random(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+// Auto-scroll behaviour: when user focuses the input or types, pin the chat to bottom like typical chat apps
+inputEl.addEventListener('focus', ()=>{ /* slight delay to allow virtual keyboard/layout changes */ setTimeout(scrollBottom, 120); });
+inputEl.addEventListener('input', ()=>{ requestAnimationFrame(scrollBottom); });
+// also on keydown to capture immediate typing on desktop
+inputEl.addEventListener('keydown', ()=>{ requestAnimationFrame(scrollBottom); });
