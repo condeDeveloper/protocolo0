@@ -123,3 +123,5 @@ inputEl.addEventListener('focus', ()=>{ /* slight delay to allow virtual keyboar
 inputEl.addEventListener('input', ()=>{ requestAnimationFrame(scrollBottom); });
 // also on keydown to capture immediate typing on desktop
 inputEl.addEventListener('keydown', ()=>{ requestAnimationFrame(scrollBottom); });
+// also on click so clicking an already-focused input still scrolls the chat to bottom
+inputEl.addEventListener('click', ()=>{ requestAnimationFrame(scrollBottom); });
