@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Protocolo 0 — Alpha</title>
+  <meta name="theme-color" content="#0b1220" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <div class="app">
+    
+    <header class="header">
+      <div class="header__left">
+        <div class="avatar avatar--online"><img src="assets/death.png" alt="avatar" /></div>
+        <div>
+          <div class="title">Protocolo 0 — Alpha</div>
+          <div class="subtitle">online agora</div>
+        </div>
+      </div>
+      <div class="header__right">
+        <button class="icon-btn" id="clearBtn" title="Limpar histórico" aria-label="Limpar histórico">🗑️</button>
+      </div>
+    </header>
+
+  <main id="chat" class="chat" aria-live="polite"></main>
+
+    
+    <form id="form" class="inputbar" autocomplete="off">
+      <input id="input" class="inputbar__text" type="text" inputmode="text" placeholder="Digite sua mensagem…"
+        maxlength="500" aria-label="Mensagem" />
+      <button class="inputbar__btn" aria-label="Enviar">➤</button>
+    </form>
+    
+    <footer class="ai-disclaimer">
+      As mensagens são geradas por inteligência artificial
+    </footer>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+
+</html>
